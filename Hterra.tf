@@ -1,5 +1,5 @@
 provider "azurerm" {
-
+    
 version = "~>2.0"
     features {}
 }
@@ -14,15 +14,18 @@ module "network-security-group" {
     resource_group_name = azurerm_resource_group.RG.name
     location = "korea Central"
     security_group_name = "Terra-NSG"
-    source_address_prefix = ["10.1.4.0/24"]
+    source_address_prefix = ["10.5.4.0/24"]
      predefined_rules = [
         {
             name = "SSH"
             priority = "500"
+            destinationAddressPrefix = "*"
+             source_port_range = "*"
         },
         {
             name = "LDAP"
-            source_port_range = "1024-1026"
+            destinationAddressPrefix = "*"
+            source_port_range = "*"
         }
     ]
     custom_rules = [
@@ -30,9 +33,12 @@ module "network-security-group" {
             name = "Terra-http"
             priority = "100"
             direction = "Inbound"
+            access = "Allow"
             protocol = "tcp"
-            destination_port_range = "80"
-            description = "description-http"
+            source_port_range ="*"
+            destination_port_range = "80" 
+            description = "80번 허용!"
+          
         }
     ]
 }
@@ -41,20 +47,20 @@ resource "azurerm_virtual_network" "Terra-Net" {
     name = "Terra-Net"
     resource_group_name = azurerm_resource_group.RG.name
     location = "Korea Central"
-    address_space = ["10.1.0.0/16"]
-    dns_servers = ["10.0.04", "10.0.0.5"]   
+    address_space = ["10.5.0.0/16"]
+    dns_servers = ["10.5.04", "10.5.0.5"]   
 
     subnet{
         name = "Terra-subnet1"
-        address_prefix= "10.1.1.0/24"
+        address_prefix= "10.5.1.0/24"
     }
     subnet{
         name = "Terra-subnet2"
-        address_prefix= "10.1.2.0/24"
+        address_prefix= "10.5.2.0/24"
     }
     subnet{
         name = "Terra-etc"
-        address_prefix= "10.1.3.0/24"
+        address_prefix= "10.5.3.0/24"
     }
 }
 
